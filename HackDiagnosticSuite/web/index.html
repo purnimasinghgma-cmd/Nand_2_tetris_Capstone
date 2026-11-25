@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hack Computer Lab</title>
+<style>
+:root{
+  --bg:#2a211b; --bg2:#3a2d24; --paper:#fbf3d6; --paper2:#f3e3a8; --card:#f8ecc4;
+  --ink:#2b1d0e; --muted:#6f5b3e; --line:#d9c58a; --gold:#f2cf6b; --gold-d:#d9ac32;
+  --dark:#2a2a33; --ok:#1d7a3c; --bad:#b3261e; --screen:#fff8e0;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:linear-gradient(160deg,var(--bg),#4a3526);color:var(--ink);
+  font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+.wrap{max-width:1240px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;gap:20px;flex-wrap:wrap;color:#f6e9bd;padding:6px 0 14px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--gold);display:grid;place-items:center;color:var(--ink)}
+.brand h1{font:600 18px/1.1 Georgia,"Times New Roman",serif;letter-spacing:.08em;margin:0;text-transform:uppercase}
+.brand small{display:block;font-size:11px;opacity:.7;letter-spacing:.1em;margin-top:4px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+nav button{background:transparent;border:0;color:#e9d9a4;font-weight:600;font-size:12px;font-family:inherit;letter-spacing:.1em;
+  padding:10px 16px;border-radius:999px;cursor:pointer;text-transform:uppercase}
+nav button:hover{background:rgba(255,255,255,.08)}
+nav button.on{background:var(--gold);color:var(--ink)}
+.student{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);padding:6px 14px 6px 6px;border-radius:999px}
+.avatar{width:34px;height:34px;border-radius:50%;background:#2f6bd9;color:#fff;display:grid;place-items:center;font-weight:700}
+.student b{display:block;font-size:13px;color:#fff}
+.student span{font-size:12px;color:#d9c98f;letter-spacing:.04em}
+main{background:var(--paper);border-radius:22px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+section{display:none}
+section.on{display:block}
+h2{font:600 22px/1.2 Georgia,serif;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 16px;font-size:14px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+@media(max-width:900px){.g2{grid-template-columns:1fr}nav{margin-left:0}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.card h3{margin:0 0 12px;font:600 15px/1.2 Georgia,serif;display:flex;align-items:center;gap:8px}
+.bezel{background:#2a2420;border-radius:14px;padding:16px}
+canvas{width:100%;display:block;image-rendering:pixelated;background:var(--screen);border-radius:6px;aspect-ratio:2/1}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+button.btn{font-weight:600;font-size:13px;font-family:inherit;padding:11px 16px;border-radius:12px;border:1px solid var(--gold-d);
+  background:var(--paper2);color:var(--ink);cursor:pointer}
+button.btn:hover{background:var(--gold)}
+a.btn{display:inline-block;color:var(--ink);font-weight:600;font-size:13px;padding:11px 16px;border-radius:12px;border:1px solid var(--gold-d);background:var(--paper2)}
+button.dark{background:var(--dark);color:#fff;border-color:var(--dark)}
+button.dark:hover{background:#40404c}
+button.dark.down{background:#1d7a3c;border-color:#1d7a3c}
+.speed{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.note{margin-top:14px;background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.5}
+.regs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.reg{background:var(--paper2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.reg small{display:block;font-size:10px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.reg b{font:700 17px/1.4 ui-monospace,Menlo,Consolas,monospace}
+.reg.wide{grid-column:1/-1}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+.mon{display:flex;justify-content:space-between;gap:10px;background:var(--paper2);border:1px solid var(--line);
+  border-radius:10px;padding:9px 12px;margin-bottom:8px;font-size:12px}
+.mon.hit{background:#f8d57a;border-color:var(--gold-d)}
+.mon span:first-child{color:var(--muted)}
+.mon b{font-family:ui-monospace,Menlo,Consolas,monospace;white-space:nowrap}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+input[type=number],select{font-size:14px;font-family:inherit;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:#fffaf0;color:var(--ink);min-width:0}
+.bits{display:flex;gap:8px;flex-wrap:wrap}
+.bit{display:flex;flex-direction:column;align-items:center;gap:6px;font:600 12px ui-monospace,monospace;
+  background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;user-select:none}
+.bit input{accent-color:var(--dark);width:18px;height:18px;margin:0}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;white-space:nowrap}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.scroll{overflow:auto;max-height:420px}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:700;font-size:12px}
+.pass{background:#d3f0dc;color:var(--ok)}.fail{background:#f8d7d4;color:var(--bad)}
+.stat b{font:700 30px/1.1 Georgia,serif;display:block}
+.stat span{font-size:13px;color:var(--muted)}
+.id{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.id .avatar{width:64px;height:64px;font-size:28px}
+.id dl{margin:0}.id dt{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.id dd{margin:0 0 6px;font:600 20px Georgia,serif}
+details{margin-top:10px}summary{cursor:pointer;font-weight:600}
+pre{background:#fffaf0;border:1px solid var(--line);padding:12px;border-radius:10px;overflow:auto;font-size:12px}
+.status{font-size:12px;color:#f6e9bd;opacity:.8;padding:10px 4px 0;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">
+    <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></div>
+    <div><h1>Hack Computer Lab</h1><small>ALU &middot; CPU &middot; MEMORY &middot; I/O</small></div>
+  </div>
+  <nav id="nav">
+    <button data-tab="home" class="on">Home</button>
+    <button data-tab="a">Part A</button>
+    <button data-tab="b">Part B</button>
+    <button data-tab="c">Part C</button>
+    <button data-tab="sub">Submission</button>
+  </nav>
+  <div class="student"><div class="avatar" id="av">P</div>
+    <div><b id="stName">Purnima Singh</b><span>Roll no: <span id="stRoll">2501730358</span></span></div></div>
+</header>
+
+<main>
+<!-- HOME -->
+<section id="tab-home" class="on">
+  <div class="card" style="margin-bottom:16px">
+    <div class="id"><div class="avatar" id="av2">P</div>
+      <dl><dt>Student name</dt><dd id="hName">Purnima Singh</dd>
+          <dt>Roll number</dt><dd id="hRoll">2501730358</dd></dl>
+    </div>
+  </div>
+  <h2>Hack Computer Dashboard</h2>
+  <p class="sub">A Python simulator of the Nand2Tetris Hack computer. Every calculation on this page runs in Python on the server.</p>
+  <div class="grid g3">
+    <div class="card stat"><b>Part A</b><span>ALU and jump logic: set the control bits, see the output and flags.</span></div>
+    <div class="card stat"><b>Part B</b><span>Assemble and run programs; see the fetch-decode-execute trace.</span></div>
+    <div class="card stat"><b>Part C</b><span>Live CPU with keyboard polling and a memory-mapped screen.</span></div>
+    <div class="card stat"><b>Submission</b><span>Run all 7 diagnostic checks and download the report.</span></div>
+  </div>
+</section>
+
+<!-- PART A -->
+<section id="tab-a">
+  <h2>Part A: ALU and jump logic</h2>
+  <p class="sub">The six control bits decide the function. The flags zr and ng feed the jump logic.</p>
+  <div class="grid g2">
+    <div class="card">
+      <h3>ALU inputs</h3>
+      <div class="row" style="margin-top:0">
+        <label class="f">x (D register)<input id="ax" type="number" value="7"></label>
+        <label class="f">y (A or M)<input id="ay" type="number" value="9"></label>
+        <label class="f">Preset function<select id="apreset"></select></label>
+      </div>
+      <div class="row"><div class="bits" id="actl"></div></div>
+      <h3 style="margin-top:18px">Jump bits</h3>
+      <div class="bits" id="ajmp"></div>
+    </div>
+    <div class="card">
+      <h3>Result</h3>
+      <div class="regs">
+        <div class="reg"><small>out (signed)</small><b id="aOut">-</b></div>
+        <div class="reg"><small>takeJump</small><b id="aJump">-</b></div>
+        <div class="reg"><small>zr (out = 0)</small><b id="aZr">-</b></div>
+        <div class="reg"><small>ng (out &lt; 0)</small><b id="aNg">-</b></div>
+        <div class="reg wide"><small>out (16-bit binary)</small><b id="aBin" style="font-size:14px">-</b></div>
+      </div>
+      <div class="note">Jump rule: (j1 AND ng) OR (j2 AND zr) OR (j3 AND positive), where positive = NOT(zr OR ng).</div>
+    </div>
+  </div>
+</section>
+
+<!-- PART B -->
+<section id="tab-b">
+  <h2>Part B: Assemble and trace a program</h2>
+  <p class="sub">In Hack, fetch, decode and execute for one instruction all happen in one clock cycle.</p>
+  <div class="card">
+    <div class="row" style="margin-top:0">
+      <label class="f">Program<select id="bprog">
+        <option>Trace.asm</option><option>Max.asm</option><option>Overflow.asm</option></select></label>
+      <label class="f">RAM[0]<input id="bR0" type="number" value="7" style="width:90px"></label>
+      <label class="f">RAM[1]<input id="bR1" type="number" value="12" style="width:90px"></label>
+      <button class="btn dark" id="bRun" style="align-self:flex-end">Assemble and run</button>
+    </div>
+    <p class="sub" style="margin:10px 0 0" id="bHint"></p>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Execution trace</h3>
+    <div class="scroll"><table id="bTable"><thead><tr>
+      <th>Cycle</th><th>PC</th><th>Instruction</th><th>Binary</th><th>A</th><th>D</th><th>Next PC</th><th>RAM (non-zero)</th>
+    </tr></thead><tbody></tbody></table></div>
+  </div>
+</section>
+
+<!-- PART C -->
+<section id="tab-c">
+  <h2>Part C: Keyboard polling and screen</h2>
+  <p class="sub">Box.asm polls the keyboard register. While a key is held it writes -1 into screen rows 41 to 60.</p>
+  <div class="grid g2">
+    <div>
+      <div class="card">
+        <h3>Screen output (512 &times; 256)</h3>
+        <div class="bezel"><canvas id="scr" width="512" height="256"></canvas></div>
+        <div class="row">
+          <button class="btn" id="cPause">Pause CPU</button>
+          <button class="btn" id="cStep">Single Step</button>
+          <button class="btn" id="cReset">Reset</button>
+          <button class="btn dark" id="cHold">HOLD KEY TO DRAW BOX</button>
+          <div class="speed">Speed: <input type="range" id="cSpeed" min="100" max="20000" step="100" value="5000"><b id="cSpeedV" class="mono">5000</b></div>
+        </div>
+        <div class="note"><b>How the keyboard polling works.</b> Press and hold any key on your physical keyboard.
+          The browser sends the key to Python, which sets the keyboard register at address 24576. The running Box.asm loop reads it,
+          and writes -1 into screen rows 41 to 60. Releasing the key writes 0 and erases the box.</div>
+      </div>
+    </div>
+    <div>
+      <div class="card"><h3>Live CPU registers</h3>
+        <div class="regs">
+          <div class="reg"><small>Program counter</small><b id="rPC">PC = 0</b></div>
+          <div class="reg"><small>A-register</small><b id="rA">A = 0</b></div>
+          <div class="reg"><small>D-register</small><b id="rD">D = 0</b></div>
+          <div class="reg"><small>KBD memory</small><b id="rK">RAM[24576] = 0</b></div>
+          <div class="reg wide"><small>ROM instruction code</small><b id="rI" style="font-size:14px">0000000000000000</b>
+            <small id="rS" style="margin-top:2px;text-transform:none;font-size:12px"></small></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px"><h3>Screen memory address monitor</h3>
+        <div id="monitor"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBMISSION -->
+<section id="tab-sub">
+  <h2>Submission</h2>
+  <p class="sub">Runs all seven diagnostic modules in Python and produces a report with your name and roll number.</p>
+  <div class="card">
+    <div class="id" style="margin-bottom:14px"><div class="avatar" id="av3">P</div>
+      <dl><dt>Name</dt><dd id="sName">Purnima Singh</dd><dt>Roll no</dt><dd id="sRoll">2501730358</dd></dl></div>
+    <div class="row" style="margin-top:0">
+      <button class="btn dark" id="sRun">Run all checks</button>
+      <a class="btn" href="/api/report.md" style="text-decoration:none">Download report (.md)</a>
+      <span id="sTime" class="sub" style="margin:0"></span>
+    </div>
+    <div class="scroll" style="margin-top:14px"><table id="sTable"><thead><tr><th>Module</th><th>Result</th></tr></thead><tbody></tbody></table></div>
+    <div id="sDetails"></div>
+  </div>
+</section>
+</main>
+<div class="status" id="status">Connecting to Python server...</div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const api = (path, body) => fetch(path, body === undefined ? {} :
+  {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)}).then(r => r.json());
+const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+let tab = "home";
+
+/* ---------- tabs ---------- */
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => {
+  tab = b.dataset.tab;
+  document.querySelectorAll("#nav button").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll("main section").forEach(s => s.classList.toggle("on", s.id === "tab-" + tab));
+  if (tab === "a") aRun();
+  if (tab === "b") bRun();
+});
+
+/* ---------- student info (from Python) ---------- */
+api("/api/info").then(i => {
+  ["stName","hName","sName"].forEach(id => $("#" + id).textContent = i.name);
+  ["stRoll","hRoll","sRoll"].forEach(id => $("#" + id).textContent = i.roll);
+  ["av","av2","av3"].forEach(id => $("#" + id).textContent = i.name[0]);
+});
+
+/* ---------- Part A ---------- */
+const CTL = ["zx","nx","zy","ny","f","no"], JB = ["j1 (JLT)","j2 (JEQ)","j3 (JGT)"];
+function bitBoxes(host, names, onchange){
+  names.forEach(n => { const l = document.createElement("label"); l.className = "bit";
+    l.innerHTML = `${n}<input type="checkbox">`; l.querySelector("input").onchange = onchange; host.appendChild(l); });
+}
+bitBoxes($("#actl"), CTL, () => aRun());
+bitBoxes($("#ajmp"), JB, () => aRun());
+const bitsOf = id => [...document.querySelectorAll(id + " input")].map(c => c.checked ? 1 : 0);
+api("/api/presets").then(list => {
+  const sel = $("#apreset");
+  sel.innerHTML = `<option value="">custom</option>` + list.map((p,i) => `<option value="${i}">${esc(p.name)}</option>`).join("");
+  sel.onchange = () => { if (sel.value === "") return;
+    list[sel.value].bits.forEach((b,i) => document.querySelectorAll("#actl input")[i].checked = !!b); aRun(); };
+  sel.value = list.findIndex(p => p.name === "D+A"); sel.onchange();
+});
+async function aRun(){
+  const r = await api("/api/alu", {x:+$("#ax").value, y:+$("#ay").value, ctl:bitsOf("#actl"), j:bitsOf("#ajmp")});
+  $("#aOut").textContent = r.out; $("#aBin").textContent = r.bin;
+  $("#aZr").textContent = r.zr; $("#aNg").textContent = r.ng; $("#aJump").textContent = r.jump ? "1 (jump)" : "0 (no jump)";
+}
+$("#ax").oninput = $("#ay").oninput = aRun;
+
+/* ---------- Part B ---------- */
+const hints = {
+  "Trace.asm":"Computes 2 + 3 and stores it in RAM[0]. Expected: D = 5, RAM[0] = 5.",
+  "Max.asm":"RAM[2] = max(RAM[0], RAM[1]). Set RAM[0] and RAM[1] below.",
+  "Overflow.asm":"Writes past a 3-word buffer at RAM[100..102]; RAM[103] changes from 99 to 0."};
+async function bRun(){
+  const p = $("#bprog").value; $("#bHint").textContent = hints[p];
+  const r = await api("/api/program", {program:p, ram:{0:+$("#bR0").value, 1:+$("#bR1").value}});
+  $("#bTable tbody").innerHTML = r.rows.map(x => `<tr><td>${x.cycle}</td><td>${x.pc}</td><td class="mono">${esc(x.src)}</td>
+    <td class="mono">${x.bin}</td><td>${x.A}</td><td>${x.D}</td><td>${x.next_pc}</td>
+    <td class="mono">${esc(Object.entries(x.mem).map(([a,v]) => `[${a}]=${v}`).join(" "))}</td></tr>`).join("");
+}
+$("#bRun").onclick = bRun; $("#bprog").onchange = bRun;
+
+/* ---------- Part C ---------- */
+const cv = $("#scr"), ctx = cv.getContext("2d"), img = ctx.createImageData(512, 256);
+function drawScreen(words){
+  const d = img.data;
+  for (let i = 0; i < d.length; i += 4){ d[i]=255; d[i+1]=248; d[i+2]=224; d[i+3]=255; }
+  for (const [idx, val] of Object.entries(words)){
+    const row = idx >> 5, col = (idx & 31) * 16;
+    for (let b = 0; b < 16; b++) if ((val >> b) & 1){
+      const o = (row * 512 + col + b) * 4; d[o]=43; d[o+1]=29; d[o+2]=14; }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+async function poll(){
+  try {
+    const s = await api("/api/state");
+    $("#status").textContent = "Connected to Python server  •  cycles executed: " + s.cycles;
+    drawScreen(s.screen);
+    $("#rPC").textContent = "PC = " + s.pc; $("#rA").textContent = "A = " + s.A; $("#rD").textContent = "D = " + s.D;
+    $("#rK").textContent = "RAM[24576] = " + s.kbd; $("#rI").textContent = s.rom_bin; $("#rS").textContent = s.rom_src;
+    $("#cPause").textContent = s.running ? "Pause CPU" : "Resume CPU";
+    $("#monitor").innerHTML = s.monitor.map(m => `<div class="mon ${m.value ? "hit" : ""}"><span>RAM[${m.addr}] (${esc(m.label)}):</span>
+      <b>${m.value} (${m.value ? "black" : "white"})</b></div>`).join("");
+  } catch(e){ $("#status").textContent = "Cannot reach the Python server. Is dashboard.py still running?"; }
+}
+setInterval(() => { if (tab === "c") poll(); else if (tab === "home") poll(); }, 100);
+poll();
+
+$("#cPause").onclick = () => api("/api/control", {action: $("#cPause").textContent.startsWith("Pause") ? "pause" : "run"});
+$("#cStep").onclick = () => api("/api/control", {action:"step"});
+$("#cReset").onclick = () => api("/api/control", {action:"reset"});
+$("#cSpeed").oninput = e => { $("#cSpeedV").textContent = e.target.value; api("/api/control", {speed:+e.target.value}); };
+
+const held = new Set();
+const sendKey = code => api("/api/key", {code});
+const holdBtn = $("#cHold");
+const press = () => { holdBtn.classList.add("down"); sendKey(32); };
+const release = () => { holdBtn.classList.remove("down"); if (!held.size) sendKey(0); };
+holdBtn.addEventListener("pointerdown", e => { e.preventDefault(); press(); });
+["pointerup","pointerleave","pointercancel"].forEach(ev => holdBtn.addEventListener(ev, release));
+window.addEventListener("keydown", e => {
+  if (tab !== "c" || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName) || e.repeat) return;
+  held.add(e.code); if (e.code === "Space") e.preventDefault(); sendKey(e.keyCode || 1);
+});
+window.addEventListener("keyup", e => { held.delete(e.code); if (!held.size) sendKey(0); });
+window.addEventListener("blur", () => { held.clear(); sendKey(0); });
+
+/* ---------- Submission ---------- */
+async function sRun(){
+  $("#sRun").textContent = "Running...";
+  const r = await api("/api/report", {});
+  $("#sTime").textContent = "Generated " + r.time;
+  $("#sTable tbody").innerHTML = r.results.map(x => `<tr><td>${esc(x.name)}</td>
+    <td><span class="pill ${x.ok ? "pass" : "fail"}">${x.ok ? "PASS" : "FAIL"}</span></td></tr>`).join("");
+  $("#sDetails").innerHTML = r.results.map(x => `<details><summary>${esc(x.name)} details</summary><pre>${esc(x.text)}</pre></details>`).join("");
+  $("#sRun").textContent = "Run all checks again";
+}
+$("#sRun").onclick = sRun;
+</script>
+</body>
+</html>

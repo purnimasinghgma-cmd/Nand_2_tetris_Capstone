@@ -1,0 +1,12 @@
+CHIP JumpControl {
+    IN zr, ng, jlt, jeq, jgt;
+    OUT takeJump;
+    PARTS:
+    Or(a=zr, b=ng, out=zrOrNg);
+    Not(in=zrOrNg, out=pos);
+    And(a=jlt, b=ng,  out=lt);
+    And(a=jeq, b=zr,  out=eq);
+    And(a=jgt, b=pos, out=gt);
+    Or(a=lt, b=eq, out=le);
+    Or(a=le, b=gt, out=takeJump);
+}
